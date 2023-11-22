@@ -1,164 +1,18 @@
 import os
 import streamlit as st
 import pandas as pd
+import numpy as np
 import matplotlib as mpl
 import plotly.express as px
 import base64
 import pickle
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
-import seaborn as sns
 
-# 사용자 계정 정보
-accounts = {
-    'kmac_dx': 'kmac_dx',
-    'databank279': 'databank2615',
-    'databank196': 'databank4259',
-    'databank105': 'databank1963',
-    'databank003': 'databank5554',
-    'databank165': 'databank2562',
-    'databank078': 'databank3023',
-    'databank009': 'databank1514',
-    'databank264': 'databank0145',
-    'databank015': 'databank8102',
-    'databank021': 'databank8012',
-    'databank082': 'databank5722',
-    'databank275': 'databank8437',
-    'databank072': 'databank6596',
-    'databank229': 'databank8208',
-    'databank100': 'databank8874',
-    'databank052': 'databank3111',
-    'databank067': 'databank1689',
-    'databank079': 'databank8929',
-    'databank053': 'databank5530',
-    'databank133': 'databank8560',
-    'databank190': 'databank7554',
-    'databank159': 'databank1530',
-    'databank007': 'databank2524',
-    'databank004': 'databank2071',
-    'databank084': 'databank6974',
-    'databank125': 'databank3588',
-    'databank031': 'databank5306',
-    'databank020': 'databank1555',
-    'databank080': 'databank5535',
-    'databank006': 'databank5990',
-    'databank025': 'databank5242',
-    'databank063': 'databank9922',
-    'databank062': 'databank2638',
-    'databank226': 'databank2570',
-    'databank011': 'databank5471',
-    'databank032': 'databank7104',
-    'databank029': 'databank1550',
-    'databank017': 'databank0970',
-    'databank248': 'databank230 ',
-    'databank145': 'databank4742',
-    'databank276': 'databank4200',
-    'databank221': 'databank4481',
-    'databank061': 'databank5325',
-    'databank111': 'databank0378',
-    'databank008': 'databank9906',
-    'databank126': 'databank5563',
-    'databank094': 'databank3083',
-    'databank136': 'databank1760',
-    'databank074': 'databank3881',
-    'databank092': 'databank7666',
-    'databank010': 'databank7754',
-    'databank253': 'databank5728',
-    'databank224': 'databank1089',
-    'databank225': 'databank1089',
-    'databank107': 'databank2753',
-    'databank012': 'databank2258',
-    'databank034': 'databank3524',
-    'databank086': 'databank6565',
-    'databank081': 'databank4708',
-    'databank055': 'databank1592',
-    'databank277': 'databank5995',
-    'databank095': 'databank1318',
-    'databank070': 'databank6506',
-    'databank040': 'databank7973',
-    'databank036': 'databank1155',
-    'databank051': 'databank8182',
-    'databank026': 'databank2203',
-    'databank104': 'databank6574',
-    'databank047': 'databank0339',
-    'databank073': 'databank8700',
-    'databank161': 'databank6138',
-    'databank146': 'databank6806',
-    'databank103': 'databank4500',
-    'databank065': 'databank8698',
-    'databank075': 'databank8356',
-    'databank098': 'databank2002',
-    'databank278': 'databank6536',
-    'databank043': 'databank0923',
-    'databank200': 'databank6032',
-    'databank049': 'databank0064',
-    'databank033': 'databank6170',
-    'databank219': 'databank7978',
-    'databank088': 'databank5911',
-    'databank071': 'databank4363',
-    'databank192': 'databank7213',
-    'databank102': 'databank8387',
-    'databank163': 'databank-394',
-    'databank030': 'databank7111',
-    'databank258': 'databank9595',
-    'databank046': 'databank9974',
-    'databank252': 'databank8297',
-    'databank039': 'databank2848',
-    'databank068': 'databank7693',
-    'databank093': 'databank8096',
-    'databank035': 'databank9111',
-    'databank054': 'databank8176',
-    'databank045': 'databank5180',
-    'databank131': 'databank3538',
-    'databank016': 'databank6531',
-    'databank083': 'databank2739',
-    'databank267': 'databank7765',
-    'databank230': 'databank1091',
-    'databank193': 'databank7779',
-    'databank223': 'databank9979',
-    'databank090': 'databank3959',
-    'databank134': 'databank7588',
-    'databank005': 'databank4917',
-    'databank024': 'databank9686',
-    'databank042': 'databank1500',
-    'databank280': 'databank5057',
-    'databank091': 'databank9129',
-    'databank001': 'databank1290',
-    'databank060': 'databank2951',
-    'databank137': 'databank1106',
-    'databank140': 'databank1106',
-    'databank202': 'databank0752',
-    'databank089': 'databank2798',
-    'databank194': 'databank4924',
-    'databank087': 'databank6121',
-    'databank002': 'databank6895',
-    'databank097': 'databank2122',
-    'databank022': 'databank6487',
-    'databank201': 'databank5918',
-    'databank066': 'databank3334',
-    'databank027': 'databank6016',
-    'databank058': 'databank0369',
-    'databank019': 'databank2829',
-    'databank041': 'databank1865',
-    'databank251': 'databank1361',
-    'databank023': 'databank5809',
-    'databank099': 'databank4335',
-    'databank096': 'databank7817',
-    'databank014': 'databank3366',
-    'databank118': 'databank6627',
-    'databank044': 'databank4440',
-    'databank228': 'databank5225',
-    'databank101': 'databank0396',
-    'databank064': 'databank3223',
-    'databank109': 'databank2753',
-    'databank037': 'databank9729',
-    'databank028': 'databank8975',
-    'databank069': 'databank6245',
-    'databank013': 'databank5694',
-    'databank050': 'databank2347'
-    }
+# -*- coding: utf-8-sig -*-
 
 # 로그인 함수
+@st.cache_data(experimental_allow_widgets=True)
 def check_login(username, password):
     return accounts.get(username) == password
 
@@ -180,11 +34,45 @@ def login_ui():
                 st.error("아이디 혹은 비밀번호가 잘못되었습니다.")
 
 # EDA 완료 상태를 설정하는 함수
+
 def set_eda_complete():
     st.session_state.eda_complete = True  # EDA 완료 상태를 True로 설정
 
 def start_setup():
     st.session_state.setup_started = True  # Setup 시작 상태를 True로 설정
+
+# 데이터 타입 최적화 함수
+def optimize_dtypes(dataframe):
+    for column in dataframe.columns:
+        col_type = dataframe[column].dtype
+
+        # 결측치가 없는 경우에만 데이터 타입 변경
+        if not dataframe[column].isnull().any():
+            if col_type != object:
+                c_min = dataframe[column].min()
+                c_max = dataframe[column].max()
+
+                if str(col_type)[:3] == 'int':
+                    if c_min > np.iinfo(np.int8).min and c_max < np.iinfo(np.int8).max:
+                        dataframe[column] = dataframe[column].astype(np.int8)
+                    elif c_min > np.iinfo(np.int16).min and c_max < np.iinfo(np.int16).max:
+                        dataframe[column] = dataframe[column].astype(np.int16)
+                    elif c_min > np.iinfo(np.int32).min and c_max < np.iinfo(np.int32).max:
+                        dataframe[column] = dataframe[column].astype(np.int32)
+                    elif c_min > np.iinfo(np.int64).min and c_max < np.iinfo(np.int64).max:
+                        dataframe[column] = dataframe[column].astype(np.int64)  
+
+                else:
+                    if c_min > np.finfo(np.float16).min and c_max < np.finfo(np.float16).max:
+                        dataframe[column] = dataframe[column].astype(np.float16)
+                    elif c_min > np.finfo(np.float32).min and c_max < np.finfo(np.float32).max:
+                        dataframe[column] = dataframe[column].astype(np.float32)
+                    else:
+                        dataframe[column] = dataframe[column].astype(np.float64)
+            else:
+                dataframe[column] = dataframe[column].astype('category')
+        
+    return dataframe
 
 # 메인 앱 콘텐츠
 def main_app():
@@ -213,6 +101,9 @@ def main_app():
             elif uploaded_file.name.endswith(('.pkl', '.pickle')):
                 df = pickle.load(uploaded_file, encoding='utf-8-sig')
 
+            # 데이터 타입 최적화
+            df = optimize_dtypes(df)
+
         # 모델 종류 선택
         model_type = st.sidebar.selectbox("모델 종류 선택", ["분류", "예측", "군집분석", "시계열", "이상치 탐지"])
         st.session_state['model_type'] = model_type  # 세션 상태에 모델 종류 저장
@@ -224,6 +115,11 @@ def main_app():
         # 시간 변수 선택 (시계열)
         if model_type == "시계열" and df is not None:
             datetime_column = st.sidebar.selectbox("시간 변수 선택", df.columns)
+            if df[datetime_column].dtype != 'datetime64[ns]':
+                try:
+                    df[datetime_column] = pd.to_datetime(df[datetime_column])
+                except Exception as e:
+                    st.error(f"시간 변수를 datetime 형식으로 변환하는 데 실패했습니다: {e}")
 
             available_columns_for_target = df.columns.drop(datetime_column)
             target_column = st.sidebar.selectbox("타겟 변수 선택", available_columns_for_target)
@@ -235,9 +131,10 @@ def main_app():
         # 활용 컬럼 선택
         selected_columns = []
         if df is not None:
-            # 타겟 변수와 날짜/시간 컬럼을 제외한 컬럼들만 선택 가능하도록 설정
-            selectable_columns = [col for col in df.columns if col != target_column and col != datetime_column]
-            selected_columns = st.sidebar.multiselect("분석에 사용할 컬럼 선택", selectable_columns, default=selectable_columns)
+            if model_type != "시계열":
+                # 타겟 변수와 날짜/시간 컬럼을 제외한 컬럼들만 선택 가능하도록 설정
+                selectable_columns = [col for col in df.columns if col != target_column and col != datetime_column]
+                selected_columns = st.sidebar.multiselect("분석에 사용할 컬럼 선택", selectable_columns, default=selectable_columns)
 
         # 메인 콘텐츠 영역
         tab1, tab2, tab3, tab4 = st.tabs(['데이터 EDA' , '분석 모델링', '모델 성능 평가', '모델 활용'])
@@ -257,7 +154,7 @@ def main_app():
 
             # df가 None이 아닐 때만 필터링된 데이터프레임 생성
             if df is not None:
-                filtered_df = df[filtered_columns].copy()
+                filtered_df = df[filtered_columns].copy()                
             else:
             # df가 None일 경우 안전하게 처리
                 filtered_df = pd.DataFrame(columns=filtered_columns)
@@ -315,37 +212,34 @@ def main_app():
                 elif model_type in ["이상치 탐지"]:
                     st.dataframe(df)
 
-                # 기본 통계 요약 메서드 호출
+                data_hash = st.session_state['model'].hash_data()
+
+                # 메소드 호출
                 if 'model' in st.session_state:
                     st.markdown("### 수치형 데이터 통계")
-                    data_description = st.session_state['model'].explore_data()
+                    data_description = st.session_state['model'].explore_data(data_hash)
                     st.write(data_description)
 
-                    # feature_type() 메서드를 사용하여 범주형과 수치형 변수를 구분합니다.
-                if 'model' in st.session_state:
-                    categorical_features, numerical_features = st.session_state['model'].feature_type()
-                    # 수치형 데이터 분포 시각화
                     st.markdown("### 수치형 데이터 분포")
-                    st.write("이 그래프는 각 수치형 변수의 분포를 보여줍니다. 분포의 형태, 중앙값, 이상치 등을 확인할 수 있습니다.")
-                    numerical_fig = st.session_state['model'].visualize_numerical_distribution()
-                    st.pyplot(numerical_fig)
+                    numerical_figs = st.session_state['model'].visualize_numerical_distribution(data_hash)
+                    for fig in numerical_figs:
+                        st.pyplot(fig)
 
-                    # 범주형 데이터 분포 시각화 (범주형 변수가 없으면 패스)
-                    categorical_fig = st.session_state['model'].visualize_categorical_distribution()
-                    if categorical_fig:
+                    categorical_figs = st.session_state['model'].visualize_categorical_distribution(data_hash)
+                    if categorical_figs:
                         st.markdown("### 범주형 데이터 분포")
-                        st.write("범주형 변수의 각 카테고리 별 빈도수를 나타내는 그래프입니다. 각 범주의 데이터 분포를 확인할 수 있습니다.")
-                        st.pyplot(categorical_fig)
+                        for fig in categorical_figs:
+                            st.pyplot(fig)
                     else:
                         st.markdown("### 범주형 데이터 분포")
-                        st.warning("이 데이터셋에는 범주형 변수가 없습니다.")                 
+                        st.warning("이 데이터셋에는 범주형 변수가 없습니다.")      
 
                 # 결측치 분포 시각화
                 if 'model' in st.session_state:
                     st.markdown("### 결측치 분포")
                     st.write('''이 차트는 데이터셋의 각 변수에서 결측치의 비율을 보여줍니다. 
                             높은 결측치 비율을 가진 변수는 주의 깊게 살펴볼 필요가 있습니다.''')
-                    missing_df, missing_fig = st.session_state['model'].visualize_missing_distribution()
+                    missing_df, missing_fig = st.session_state['model'].visualize_missing_distribution(data_hash)
                     col1, col2 = st.columns(2)
                     with col1:
                         st.dataframe(missing_df, height=300)  # 데이터 프레임 높이 조절
@@ -355,7 +249,7 @@ def main_app():
                 # 시계열 모델이 아닐 경우에만 결측치 처리 및 시각화 실행
                 if model_type != '시계열':
                     missing_threshold = st.sidebar.slider("결측치 처리 임계값", 0, 100, 30)
-                    cleaned_missing_df, cleaned_missing_fig = st.session_state['model'].handle_and_visualize_missing(threshold=missing_threshold)
+                    cleaned_missing_df, cleaned_missing_fig = st.session_state['model'].handle_and_visualize_missing(data_hash, threshold=missing_threshold)
                     col1, col2 = st.columns(2)
                     with col1:
                         st.dataframe(cleaned_missing_df, height=300)  # 데이터 프레임 높이 조절
@@ -364,11 +258,11 @@ def main_app():
 
                 # 수치형 변수 상관계수 시각화
                 if 'model' in st.session_state:
-                    numerical_corr_fig = st.session_state['model'].numerical_correlation()
+                    numerical_corr_fig = st.session_state['model'].numerical_correlation(data_hash)
                     # st.pyplot(numerical_corr_fig)
                     
                     # 범주형 변수 상관계수 시각화
-                    categorical_corr_fig = st.session_state['model'].categorical_correlation()
+                    categorical_corr_fig = st.session_state['model'].categorical_correlation(data_hash)
                     # st.pyplot(categorical_corr_fig)
                     st.markdown("### 변수 간 상관계수")
                     st.write("변수 간의 상관관계를 나타내는 히트맵입니다. 값이 높을수록 강한 상관관계를 나타냅니다.")
@@ -407,7 +301,7 @@ def main_app():
             if df is not None:
 
                 # 필터링된 데이터프레임
-                include = selected_columns + ([target_column] if target_column else [])
+                include = selected_columns + ([target_column] if target_column else []) + ([datetime_column] if datetime_column else [])
                 filtered_df = df[include].copy()
 
                 # 모델 설정 옵션
@@ -424,7 +318,7 @@ def main_app():
                     multicollinearity_threshold = st.slider("다중공선성 임계값", 0.0, 1.0, 0.9, help="다중공선성을 제거할 상관관계 임계값.")
                     train_size = st.slider("훈련 데이터 크기", 0.1, 1.0, 0.7, help="전체 데이터 중 훈련 데이터로 사용할 비율.")
                     fold_strategy = st.selectbox("교차 검증 전략", ['stratifiedkfold', 'kfold'], index=0, help="교차 검증 시 사용할 전략, 예: stratifiedkfold, kfold.")
-                    fold = st.number_input("교차 검증 폴드 수", min_value=2, max_value=10, value=5, help="교차 검증 시 데이터를 나눌 폴드의 수.")
+                    fold = st.number_input("교차 검증 폴드 수", min_value=2, max_value=10, value=3, help="교차 검증 시 데이터를 나눌 폴드의 수.")
                     profile = st.checkbox("프로파일링 활성화", value=True, help="데이터 프로파일링 기능 활성화 여부.")
                     session_id = st.number_input("세션 ID", value=786, help="실험의 재현성을 위한 세션 ID.")
                     fix_imbalance = st.checkbox("데이터 불균형 처리", value=True, help="클래스 불균형이 존재하는 데이터셋에 대한 처리 여부.")
@@ -497,18 +391,25 @@ def main_app():
                                 # 세션 상태 업데이트
                                 st.session_state['model_selected'] = True
 
-                        # 모델 저장
+                        # 모델 저장 및 다운로드 버튼 제공
                         if st.session_state.get('model_selected', False):
                             st.write('\n')
                             st.markdown('### 모델 저장 설정')
-                            model_name = st.text_input("저장할 모델의 이름을 입력하세요", "best_model")
-                            save_path = st.text_input("모델을 저장할 경로를 입력하세요", "/path/to/directory")
+                            model_name = st.text_input("저장할 모델의 이름을 입력하세요", "classification_model")
 
                             if st.button("모델 저장하기"):
                                 with st.spinner('모델을 저장하는 중...'):
-                                    model.save_model(model_name, save_path)
+                                    save_path = model.save_model(model_name)  # 모델 저장 함수 호출
+
+                                    # 파일 다운로드 버튼 생성
+                                    with open(save_path, "rb") as file:
+                                        st.download_button(
+                                            label="모델 다운로드",
+                                            data=file,
+                                            file_name=save_path,
+                                            mime="application/octet-stream"
+                                        )
                                     st.success('모델 저장 완료!')
-                                    st.write(f"'{save_path}' 경로에 모델 '{model_name}'을 저장했습니다.")
             
                 elif model_type == "예측":
                     model = Regression(None, target_column)
@@ -519,7 +420,7 @@ def main_app():
                     multicollinearity_threshold = st.slider("다중공선성 임계값", 0.0, 1.0, 0.9, help="다중공선성을 제거할 상관관계 임계값.")
                     train_size = st.slider("훈련 데이터 크기", 0.1, 1.0, 0.7, help="전체 데이터 중 훈련 데이터로 사용할 비율.")
                     # fold_strategy = st.selectbox("교차 검증 전략", ['kfold'], index=0, help="교차 검증 시 사용할 전략, 예: kfold.")
-                    fold = st.number_input("교차 검증 폴드 수", min_value=2, max_value=10, value=5, help="교차 검증 시 데이터를 나눌 폴드의 수.")
+                    fold = st.number_input("교차 검증 폴드 수", min_value=2, max_value=10, value=3, help="교차 검증 시 데이터를 나눌 폴드의 수.")
                     # profile = st.checkbox("프로파일링 활성화", value=True, help="데이터 프로파일링 기능 활성화 여부.")
                     session_id = st.number_input("세션 ID", value=786, help="실험의 재현성을 위한 세션 ID.")
                     normalize = st.checkbox("데이터 정규화", value=True, help="데이터 정규화 여부.")
@@ -538,8 +439,9 @@ def main_app():
                                     train_size=train_size,
                                     fold_strategy='kfold',
                                     fold=fold,
-                                    # profile=profile,
                                     session_id=session_id,
+                                    normalize=normalize,
+                                    normalize_method=normalize_method,
                                     feature_selection=feature_selection,
                                     feature_selection_method=feature_selection_method,
                                     feature_selection_estimator=feature_selection_estimator,
@@ -592,28 +494,42 @@ def main_app():
                                     st.write(f'**{str(best_model)}**')
                                     st.session_state['model_selected'] = True
 
-                            # 모델 저장
+                            # 모델 저장 및 다운로드 버튼 제공
                             if st.session_state.get('model_selected', False):
                                 st.markdown('### 모델 저장 설정')
-                                model_name = st.text_input("저장할 모델의 이름을 입력하세요", "best_model")
-                                save_path = st.text_input("모델을 저장할 경로를 입력하세요", "/path/to/directory")
+                                model_name = st.text_input("저장할 모델의 이름을 입력하세요", "regression_model")
 
                                 if st.button("모델 저장하기"):
                                     with st.spinner('모델을 저장하는 중...'):
-                                        model.save_model(model_name, save_path)
+                                        save_path = model.save_model(model_name)  # 모델 저장 함수 호출
+
+                                        # 파일 다운로드 버튼 생성
+                                        with open(save_path, "rb") as file:
+                                            st.download_button(
+                                                label="모델 다운로드",
+                                                data=file,
+                                                file_name=save_path,
+                                                mime="application/octet-stream"
+                                            )
                                         st.success('모델 저장 완료!')
-                                        st.write(f"'{save_path}' 경로에 모델 '{model_name}'을 저장했습니다.")
 
                 elif model_type == "군집분석":
                     model = Clustering(None, target_column)
                     model.load_data(dataframe=filtered_df)
 
+                    session_id = st.number_input("세션 ID", value=786, help="실험의 재현성을 위한 세션 ID.")
+                    normalize = st.checkbox("데이터 정규화", value=True, help="데이터 정규화 여부.")
+                    normalize_method = st.selectbox("정규화 방법", ['zscore', 'minmax', 'maxabs', 'robust'], index=0, help="데이터 정규화 방법 선택, 예: zscore.")
+
                     # setup 시작 버튼
                     if st.button("Setup 시작", on_click=start_setup):
-
                         
                         # setup 메서드 실행
-                        _, setup_results = model.setup(session_id=786, verbose=False)
+                        _, setup_results = model.setup(
+                            session_id=session_id, 
+                            normalize=normalize,
+                            normalize_method=normalize_method,
+                            verbose=False)
                         st.success("Setup 완료!")
 
                         # setup 결과 표시
@@ -652,22 +568,32 @@ def main_app():
 
                                 st.session_state['model_selected'] = True
 
-                        # 모델 저장
+                        # 모델 저장 및 다운로드 버튼 제공
                         if st.session_state.get('model_selected', False):
                             st.write('\n')
                             st.markdown('### 모델 저장 설정')
                             model_name = st.text_input("저장할 모델의 이름을 입력하세요", "clustering_model")
-                            save_path = st.text_input("모델을 저장할 경로를 입력하세요", "/path/to/directory")
 
                             if st.button("모델 저장하기"):
                                 with st.spinner('모델을 저장하는 중...'):
-                                    model.save_model(model_name, save_path)
+                                    save_path = model.save_model(model_name)  # 모델 저장 함수 호출
+
+                                    # 파일 다운로드 버튼 생성
+                                    with open(save_path, "rb") as file:
+                                        st.download_button(
+                                            label="모델 다운로드",
+                                            data=file,
+                                            file_name=save_path,
+                                            mime="application/octet-stream"
+                                        )
                                     st.success('모델 저장 완료!')
-                                    st.write(f"'{save_path}' 경로에 모델 '{model_name}'을 저장했습니다.")
 
                 elif model_type == "시계열":
                     model = TimeSeries(None, target_column)
                     model.load_data(dataframe=filtered_df)
+                    filtered_df.index = filtered_df[datetime_column]
+                    filtered_df.drop(columns=[datetime_column], inplace=True)
+                    st.session_state['exog_vars'] = filtered_df[selected_columns]
 
                     # 사용자에게 주기(freq) 선택 옵션 표시
                     selected_freq = st.selectbox("데이터의 주기(freq)를 선택하세요. ('D' - 일, 'M' - 월, 'Q' - 분기, 'Y' - 년, 'H' - 시간, 'T' 또는 'min' - 분, 'S' - 초)", 
@@ -677,7 +603,9 @@ def main_app():
                     # 사용자가 주기(freq)를 선택하면 데이터 정제
                     if selected_freq:
                         new_index = pd.date_range(start=filtered_df.index.min(), end=filtered_df.index.max(), freq=selected_freq)
-                        filtered_df = filtered_df.reindex(new_index, fill_value=0)
+                        new_df = pd.DataFrame(index=new_index)
+                        filtered_df = filtered_df.join(new_df)
+                        filtered_df = filtered_df.fillna('null')
 
                     fold = st.number_input("교차 검증 폴드 수", min_value=2, max_value=10, value=3, help="교차 검증 시 데이터를 나눌 폴드의 수.")
                     fh = st.number_input("예측 지평(데이터의 25%에 해당되는 값까지 적용 가능)", min_value=1, max_value=365, value=12, help="모델이 예측할 기간의 범위.")
@@ -693,6 +621,13 @@ def main_app():
                         scale_target = st.selectbox("변수의 스케일링 방법", scale_target_options, help="변수를 어떻게 스케일링할지 선택합니다.")
                     else:
                         scale_target = None
+                        
+                    st.session_state['fh'] = fh
+                    st.session_state['session_id'] = session_id
+                    st.session_state['numeric_imputation_target'] = numeric_imputation_target
+                    st.session_state['numeric_imputation_exogenous'] = numeric_imputation_target
+                    st.session_state['scale_target'] = scale_target
+                    st.session_state['scale_exogenous'] = scale_target
 
                     # setup 시작 버튼
                     if st.button("Setup 시작", on_click=start_setup):
@@ -700,6 +635,7 @@ def main_app():
                         _, setup_results = model.setup(
                             fold=fold,
                             fh=fh,
+                            enforce_exogenous=False,
                             session_id=session_id,
                             seasonal_period=seasonal_period,
                             numeric_imputation_target=numeric_imputation_target,
@@ -739,32 +675,32 @@ def main_app():
                                     st.markdown(f'**모델 {i+1}:** {str(tuned_model)}')
                                     st.dataframe(result_df)  # 각 모델의 최적화 결과를 데이터 프레임 형태로 표시합니다.
                 
-                        if st.session_state.get('optimization_completed', False):
-                            # 최고 성능 모델 선택
-                            st.markdown('### 최고 성능 모델 선택')
-                            best_model_optimize = st.selectbox("최고 성능 모델 선택 기준", ['MASE', 'RMSSE', 'MAE', 'RMSE', 'MAPE', 'SMAPE', 'R2'], index=0)
-                            if st.button("최고 성능 모델 선택"):
-                                with st.spinner('최고 성능 모델을 선택하는 중...'):
-                                    best_model = model.select_best_model(optimize=best_model_optimize)
-                                    st.session_state['models_dict']['최고 성능 모델'] = best_model
-                                    st.success('최고 성능 모델 선택 완료!')
+                        # if st.session_state.get('optimization_completed', False):
+                        #     # 최고 성능 모델 선택
+                        #     st.markdown('### 앙상블 모델 생성')
+                        #     best_model_optimize = st.selectbox("앙상블 모델 생성 기준", ['MASE', 'RMSSE', 'MAE', 'RMSE', 'MAPE', 'SMAPE', 'R2'], index=0)
+                        #     if st.button("앙상블 모델 생성"):
+                        #         with st.spinner('앙상블 모델을 생성하는 중...'):
+                        #             best_model = model.select_best_model(optimize=best_model_optimize)
+                        #             st.session_state['models_dict']['앙상블 모델'] = best_model
+                        #             st.success('모델 선택 완료!')
 
-                                    # 최고 성능 모델 정보 표시
-                                    st.markdown('##### 선택된 최고 성능 모델')
-                                    st.write(f'**{str(best_model)}**')
-                                    st.session_state['model_selected'] = True
+                        #             # 최고 성능 모델 정보 표시
+                        #             st.markdown('##### 선택된 모델')
+                        #             st.write(f'**{str(best_model)}**')
+                        #             st.session_state['model_selected'] = True
 
                             # 모델 저장
-                            if st.session_state.get('model_selected', False):
-                                st.markdown('### 모델 저장 설정')
-                                model_name = st.text_input("저장할 모델의 이름을 입력하세요", "best_model")
-                                save_path = st.text_input("모델을 저장할 경로를 입력하세요", "/path/to/directory")
+                            # if st.session_state.get('model_selected', False):
+                            #     st.markdown('### 모델 저장 설정')
+                            #     model_name = st.text_input("저장할 모델의 이름을 입력하세요", "timeseries_model")
+                            #     save_path = st.text_input("모델을 저장할 경로를 입력하세요", "C:/Users/Desktop")
 
-                                if st.button("모델 저장하기"):
-                                    with st.spinner('모델을 저장하는 중...'):
-                                        model.save_model(model_name, save_path)
-                                        st.success('모델 저장 완료!')
-                                        st.write(f"'{save_path}' 경로에 모델 '{model_name}'을 저장했습니다.")                              
+                            #     if st.button("모델 저장하기"):
+                            #         with st.spinner('모델을 저장하는 중...'):
+                            #             model.save_model(model_name, save_path)
+                            #             st.success('모델 저장 완료!')
+                            #             st.write(f"'{save_path}' 경로에 모델 '{model_name}'을 저장했습니다.")                              
 
                 elif model_type == "이상치 탐지":
                     model = AnomalyDetection(None, target_column)
@@ -819,17 +755,25 @@ def main_app():
                             st.write(f'##### 결과 - {selected_model} 모델')
                             st.dataframe(st.session_state['results'][selected_model])  # 선택된 모델의 결과 표시
 
+                            # 모델 저장 및 다운로드 버튼 제공
                             st.markdown('### 모델 저장 설정')
-                            model_name = st.text_input("저장할 모델의 이름을 입력하세요", f"{selected_model}")
-                            save_path = st.text_input("모델을 저장할 경로를 입력하세요", "path/to/directory")
+                            model_name = st.text_input("저장할 모델의 이름을 입력하세요", "anomaly_model")
 
                             if st.button("모델 저장하기"):
                                 with st.spinner('모델을 저장하는 중...'):
                                     models_dict = st.session_state.get('models_dict', {})
                                     if selected_model in models_dict:
-                                        model.save_model(selected_model, model_name, save_path)
+                                        save_path = model.save_model(models_dict[selected_model], model_name)  # 모델 저장 함수 호출
+
+                                        # 파일 다운로드 버튼 생성
+                                        with open(save_path, "rb") as file:
+                                            st.download_button(
+                                                label="모델 다운로드",
+                                                data=file,
+                                                file_name=save_path,
+                                                mime="application/octet-stream"
+                                            )
                                         st.success('모델 저장 완료!')
-                                        st.write(f"'{save_path}' 경로에 모델 '{model_name}'이(가) 저장되었습니다.")
 
         with tab3:
             st.set_option('deprecation.showPyplotGlobalUse', False)
@@ -1020,29 +964,53 @@ def main_app():
                                 st.markdown('##### 시각화 plot')
                                 st.session_state['model'].plot_model(selected_model)
 
-                        # 기타 시각화 유형 선택
-                        st.write('\n')
-                        st.markdown('##### 성능 시각화')
-                        plot_types = ['diff', 'periodogram', 'ccf', 'decomp']
-                        selected_plot = st.selectbox("추가 시각화 유형 선택", plot_types)
+                            # 기타 시각화 유형 선택
+                            st.write('\n')
+                            st.markdown('##### 성능 시각화')
+                            plot_types = ['diff', 'periodogram', 'ccf', 'decomp']
+                            selected_plot = st.selectbox("추가 시각화 유형 선택", plot_types)
 
-                        if st.button("시각화 보기") and selected_model_name:
-                            with st.spinner(f"{selected_plot} 시각화 생성 중..."):
-                                st.session_state['model'].visualize_model(selected_model, selected_plot)
+                            try:
+                                if st.button("시각화 보기") and selected_model_name:
+                                    with st.spinner(f"{selected_plot} 시각화 생성 중..."):
+                                        st.session_state['model'].visualize_model(selected_model, selected_plot)
+                            except Exception:
+                                st.write("지원하지 않는 모델입니다.")
 
-                        st.write('\n')
-                        st.markdown('##### 최종 예측')
-                        if st.button("예측"):
-                            # 예측 수행
                             final_model = st.session_state['model'].finalize_model(selected_model)
-                            predictions = st.session_state['model'].predict_model(final_model)
-                        
-                            st.write(predictions)
 
-                            # 예측 결과 시각화
-                            if not predictions.empty:
-                                fig = px.line(predictions, x=predictions.index, y=predictions.columns[0])
-                                st.plotly_chart(fig)   
+                            st.write('\n')
+                            st.markdown('##### 최종 예측')
+                            if st.button("예측"):                            
+                                final_model = st.session_state['model'].finalize_model(selected_model)
+                                predictions = st.session_state['model'].predict_model(final_model)
+                                predictions.index = predictions.index.to_timestamp()
+
+                                st.write(predictions)
+
+                                # 예측 결과 시각화
+                                if not predictions.empty:
+                                    fig = px.line(predictions, x=predictions.index, y=predictions.columns[0])
+                                    st.plotly_chart(fig)
+
+                            # 모델 저장 및 다운로드 버튼 제공
+                            st.write('\n')
+                            st.markdown('##### 모델 저장 설정')
+                            model_name = st.text_input("저장할 모델의 이름을 입력하세요", "timeseries_model")
+
+                            if st.button("모델 저장하기"):
+                                with st.spinner('모델을 저장하는 중...'):
+                                    save_path = model.save_model(model_name, final_model)  # 모델 저장 함수 호출
+
+                                    # 파일 다운로드 버튼 생성
+                                    with open(save_path, "rb") as file:
+                                        st.download_button(
+                                            label="모델 다운로드",
+                                            data=file,
+                                            file_name=save_path,
+                                            mime="application/octet-stream"
+                                        )
+                                    st.success('모델 저장 완료!')
 
                     elif st.session_state['model_type'] == "이상치 탐지":
                     # 모델이 '이상치 탐지'인 경우
@@ -1217,41 +1185,92 @@ def main_app():
                                         st.write(predictions)
 
                     if model_type == "시계열":
-                        if predict_option == "파일 업로드":
-                            st.write('\n')
-                            st.write('-------------------------------------------------')
-                            st.write('##### 예측할 데이터 ')
-                            uploaded_file = st.file_uploader("파일 업로드 (CSV, Excel)", type=['csv', 'xlsx'])
-                            if uploaded_file:
-                                if uploaded_file.name.endswith('.csv'):
-                                    df = pd.read_csv(uploaded_file)
-                                elif uploaded_file.name.endswith('.xlsx'):
-                                    df = pd.read_excel(uploaded_file)
+                        st.write('\n')
+                        st.write('##### 시계열 분석은 모델 활용이 지원되지 않습니다.')
+                        # if predict_option == "파일 업로드":
+                        #     st.write('\n')
+                        #     st.write('-------------------------------------------------')
+                        #     st.write('##### 예측할 데이터 ')
+                        #     uploaded_file = st.file_uploader("파일 업로드 (CSV, Excel)", type=['csv', 'xlsx'])
+                        #     if uploaded_file:
+                        #         if uploaded_file.name.endswith('.csv'):
+                        #             df = pd.read_csv(uploaded_file)
+                        #         elif uploaded_file.name.endswith('.xlsx'):
+                        #             df = pd.read_excel(uploaded_file)
 
-                                # 인덱스로 사용될 컬럼 선택
-                                index_column = st.selectbox("인덱스로 사용할 컬럼 선택", df.columns)
-                                # 인덱스 설정
-                                df.set_index(index_column, inplace=True)
+                        #         # 인덱스로 사용될 컬럼 선택
+                        #         index_column = st.selectbox("인덱스로 사용할 컬럼 선택", df.columns)
+                        #         # 인덱스 설정
+                        #         df.set_index(index_column, inplace=True)
+                        #         df.index = pd.to_datetime(df.index)
 
-                                # 타겟 데이터 컬럼 삭제
-                                if target_column and target_column in df.columns:
-                                    df = df.drop(target_column, axis=1)
+                        #         if st.button("예측하기"):
+                        #             final_model = st.session_state['model'].finalize_model(selected_model)
+                                    
+                        #             from pycaret.time_series import TSForecastingExperiment
 
-                                if set(selected_columns) != set(df.columns):
-                                    st.write("선택된 컬럼: ", selected_columns)
-                                    st.write("파일 컬럼: ", df.columns.tolist())
-                                    st.error("학습용 데이터와 동일한 형태의 파일을 제공해주세요.")
-                                else:                                
-                                    if st.button("예측하기"):
-                                        # 예측 수행
-                                        predictions = st.session_state['model'].predict_model(selected_model)
-                                        original_freq = pd.infer_freq(df.index)
-                                        last_date  = pd.to_datetime(df.index[-1])
-                                        start_date = last_date + pd.Timedelta(days=1)
-                                        prediction_length = len(predictions)
-                                        date_index = pd.date_range(start=start_date, periods=prediction_length, freq=original_freq)
-                                        predictions.index = date_index
-                                        st.write(predictions)              
+                        #             # 외생변수가 있는 경우
+                        #             if 'exog_vars' in st.session_state and not st.session_state['exog_vars'].empty:
+                        #                 # 업로드된 데이터에서 외생변수 선택
+                        #                 exog_exps = []
+                        #                 exog_models = []
+
+                        #                 exog_vars = st.session_state['exog_vars'].columns
+
+                        #                 for exog_var in exog_vars:
+                        #                     exog_exp = TSForecastingExperiment()
+
+                        #                 exog_exp.setup(
+                        #                         data=st.session_state['exog_vars'],
+                        #                         target=exog_var,
+                        #                         fh=st.session_state['fh'],
+                        #                         numeric_imputation_target=st.session_state['numeric_imputation_target'],
+                        #                         numeric_imputation_exogenous=st.session_state['numeric_imputation_exogenous'],
+                        #                         session_id=st.session_state['session_id'],
+                        #                         verbose=False
+                        #                     )
+
+                        #                 best = exog_exp.compare_models(
+                        #                         sort="mase",
+                        #                         include=[
+                        #                             "arima",
+                        #                             "ets",
+                        #                             "exp_smooth",
+                        #                             "theta",
+                        #                             "lightgbm_cds_dt",
+                        #                         ],
+                        #                         verbose=False
+                        #                     )
+                                        
+                        #                 final_exog_model = exog_exp.finalize_model(best)
+
+                        #                 exog_exps.append(exog_exp)
+                        #                 exog_models.append(final_exog_model)
+
+                        #                 future_exog = [
+                        #                     exog_exp.predict_model(exog_model)
+                        #                     for exog_exp, exog_model in zip(exog_exps, exog_models)
+                        #                 ]
+
+                        #                 future_exog = pd.concat(future_exog, axis=1)
+                        #                 future_exog.columns = exog_vars
+                            
+                        #                 exp_future = TSForecastingExperiment()
+                        #                 future_preds = exp_future.predict_model(
+                        #                     final_model,  # 모델 입력
+                        #                     X=future_exog,  # 외생변수 입력
+                        #                     fh=st.session_state['fh'],
+                        #                     round=0
+                        #                 )
+
+                        #                 future_preds.index = future_preds.index.to_timestamp()
+                        #                 st.write(future_preds)
+
+                        #             # 외생변수가 없는 경우
+                        #             else:
+                        #                 predictions = st.session_state['model'].predict_model(final_model, fh=st.session_state['fh'])
+                        #                 predictions.index = predictions.index.to_timestamp()
+                        #                 st.write(predictions)
 
                     if model_type == "이상치 탐지":
                         if predict_option == "직접 입력":
@@ -1311,6 +1330,7 @@ def main_app():
                                 # b64 = base64.b64encode(csv.encode()).decode()  # 문자열로 인코딩
                                 # href = f'<a href="data:file/csv;base64,{b64}" download="prediction_results.csv">Download CSV file</a>'
                                 # st.markdown(href, unsafe_allow_html=True)
+                                
     except UnicodeDecodeError as e:
         st.error("업로드한 파일의 인코딩 형식이 올바르지 않습니다. UTF-8 인코딩 형식으로 파일을 저장해주세요.")
     except ValueError as e:
@@ -1328,10 +1348,11 @@ def main_app():
         st.error("네트워크 연결에 문제가 있습니다. 인터넷 연결을 확인하고 다시 시도해주세요.")
     except Exception as e:
         st.error(f'예상치 못한 오류가 발생했습니다: {e} \n \n 화면을 캡쳐하여 Q&A 게시판에 질문을 남겨주세요.')
-
         
-# 로그인 상태에 따라 다른 화면 표시
-if not st.session_state['logged_in']:
-    login_ui()
-else:
-    main_app()
+# # 로그인 상태에 따라 다른 화면 표시
+# if not st.session_state['logged_in']:
+#     login_ui()
+# else:
+#     main_app()
+
+main_app()
